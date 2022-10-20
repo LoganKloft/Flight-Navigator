@@ -106,3 +106,26 @@ class Load:
                 WHERE a.AirlineID = r.AirlineID
                 MERGE (r)-[:FLOWN_BY]->(a)
             ''')
+
+    def create_indexes(self):
+        with self.driver.session() as session:
+            session.run('''
+                CREATE INDEX ap_id
+                IF NOT EXISTS 
+                FOR (a:Airport) ON (a.AirportID)
+            ''')
+
+            session.run('''
+                CREATE INDEX al_id 
+                IF NOT EXISTS
+                FOR (a:Airline) ON (a.AirlineID)
+            ''')
+
+            session.run('''
+                CREATE INDEX rt_id 
+                IF NOT EXISTS
+                FOR (r:Route) 
+                ON (r.SourceAirportID, 
+                    r.DestinationAirportID,
+                    r.AirlineID)
+            ''')
